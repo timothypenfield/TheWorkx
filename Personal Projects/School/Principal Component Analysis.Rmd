@@ -1,0 +1,74 @@
+---
+title: "BAN 7060 Assignment 3"
+author: "Tim Enfield"
+date: "September 29, 2019"
+output: html_document
+---
+
+```{r Installs and Libraries}
+
+install.packages("MVA")
+library(MVA)
+install.packages("dplyr")
+library(dplyr)
+install.packages("scatterplot3d")
+library(scatterplot3d)
+library(readxl)
+install.packages("tidyverse")
+library(tidyverse)
+library(HSAUR2)
+```
+
+```{r Exercise 3.3}
+View (crimtab)
+crim_comp<-princomp(crimtab)
+summary(crim_comp, loadings=TRUE)
+```
+Data definitions from https://stat.ethz.ch/R-manual/R-patched/library/datasets/html/crimtab.html
+Note that only fingers and body heights are mentioned here.
+
+I would interpret this output, as of the 2 variables listed in the table, i.e. finger lengths and body heights, 2 major principal components make up the about 93% of variation within the body height samples and are really all that need to be reviewed. 
+
+These components are defined by:
+
+Component 1 is composed of Finger Length Midpoints 157.48,160.02, 162.56, 170.18, 172.72, and 175.26  
+Component 2 is composed of by Finger Length Midpoints 154.94, 157.48,160.02, 162.56, 170.18, 172.72, 175.26 and 177.8
+
+```{r Exercise 3.5 Reference}
+#Book Example for Reference#
+cor(USairpollution[,-1])
+usair_pca<-princomp(USairpollution[,-1], cor=TRUE)
+
+out<-sapply(1:6, function(i) {
+plot(USairpollution$SO2, usair_pca$scores[,i], xlab = paste("PC",i,sep=""), ylab="Sulfer Dioxide Concentration")})
+summary(usair_pca, loadings =TRUE)
+
+usairreg<- lm(USairpollution$SO2~usair_pca$scores, data =USairpollution)
+summary(usairreg)    
+```
+Looking at this data, looks like 3 components are what we can whittle this data set to (for evaluation purposes). It looks like Comp1 is driven by a combination of temp, manu, and popul, Comp2 is more driven by precip and predays, and Comp3 is precip and temp primarily 
+
+When using the PCA components for a regression, Comp1 has a big impact but it is interesting that even though the rule says that for Exploratory Analysis you can look at only 75-85% of the differentiate among the data.  But the Components lower in variance are significant in a regression! Best not throw them out too soon!
+
+```{r Exercise 3.5}
+#Removing Outliers#
+View(USairpollution)
+outcity<-match(lab<- c("Chicago", "Detroit", "Cleveland", "Philadelphia"), rownames(USairpollution))
+View(outcity) 
+outlierfree<- subset(USairpollution) [ -c(7, 9, 14,30), ]
+View(outlierfree)
+cor(outlierfree[,-1])
+
+usair_pca_2<-princomp(outlierfree[,-1], cor=TRUE)
+summary(usair_pca_2, loadings =TRUE)
+
+
+summary(usair_pca, loadings =TRUE)
+
+usairreg2<- lm(USairpollution$SO2~usair_pca_2$scores, data =USairpollution)
+
+summary(usairreg)    
+summary(usairreg2)    
+```
+
+In reviewing the outputs between the PCA with and without the related outliers, interestingly the outlier cities have decreased the overall fit of the model and each of the estimate coefficients have decreased as well. T values drop significanyly which is strange that the model is less of a good fit. 

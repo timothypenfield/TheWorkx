@@ -1,0 +1,97 @@
+```{r Installs and Libraries}
+
+install.packages("MVA")
+library(MVA)
+install.packages("dplyr")
+library(dplyr)
+install.packages("scatterplot3d")
+library(scatterplot3d)
+library(readxl)
+install.packages("tidyverse")
+library(tidyverse)
+library(HSAUR2)
+install.packages("janitor")
+library(janitor)
+```
+
+school <- read.csv("C:/Users/timot/Dropbox/Educational/MSBA/BAN7060 MultiVariate Analysis/SchoolData/Tuition_withMedians.csv")
+View(school)
+tabyl(school$SchoolClass, sort = TRUE)
+quantile(SAT, c(.32, .57, .98)) 
+
+
+#By Type#
+school_public<- subset(school, school$PubvPriv=="Public")[,]
+School_SAT<- school  [-1,c(13:16)]
+School_SAT_Private<-subset(school, school$PubvPriv=="Private not-for-profit") [-1,c(13:16)]
+School_SAT_Public<-subset(school, school$PubvPriv=="Public") [-1,c(13:16)]
+School_ACT<- school  [-1,c(2:3)]
+School_ACT_Private<-subset(school, school$PubvPriv=="Private not-for-profit") [-1,c(2:3)]
+School_ACT_Public<-subset(school, school$PubvPriv=="Public") [-1,c(2:3)]
+school_private<- subset(school, school$PubvPriv=="Private not-for-profit")[,]
+school_Research<- subset(school, school$SchoolClass=="Research Universities (very high research activity)"| school$SchoolClass=="Doctoral/Research Universities"|school$SchoolClass=="Research Universities (high research activity)")[,]
+school_DiverseFields<- subset(school, school$SchoolClass=="Baccalaureate Colleges--Diverse Fields")[,]
+
+school_public_use<- school_public [-1,c(2:6,11:16)]
+View (school_public_use)
+public_comp<-princomp(school_public_use)
+summary(public_comp, loadings=TRUE)
+
+school_priv_use<- school_private [-1,c(2:6,11:16)]
+View (school_priv_use)
+priv_comp<-princomp(school_priv_use)
+summary(priv_comp, loadings=TRUE)
+
+school_research_use<- school_Research [-1,c(2:6,11:16)]
+View (school_research_use)
+research_comp<-princomp(school_research_use)
+summary(research_comp, loadings=TRUE)
+
+school_diverse_use<- school_DiverseFields [-1,c(2:6,11:16)]
+View (school_diverse_use)
+diverse_comp<-princomp(school_diverse_use)
+summary(research_diverse, loadings=TRUE)
+
+
+#By Size
+school_Small<- subset(school, school$SchoolClass=="Master's Colleges and Universities (smaller programs)")[,]
+school_Large<- subset(school, school$SchoolClass=="Master's Colleges and Universities (larger programs)")[,]
+
+school_small_use<- school_Small [-1,c(2:6,11:16)]
+View (school_small_use)
+small_comp<-princomp(school_small_use)
+summary(small_comp, loadings=TRUE)
+
+school_large_use<- school_Large [-1,c(2:6,11:16)]
+View (school_large_use)
+large_comp<-princomp(school_large_use)
+summary(large_comp, loadings=TRUE)
+
+school_large_use<- school_Large [-1,c(2:6,11:16)]
+View (school_large_use)
+large_comp<-princomp(school_large_use)
+summary(large_comp, loadings=TRUE)
+
+#Misc
+SAT_comp<-princomp(School_SAT)
+summary(SAT_comp, loadings=TRUE)
+
+SATPriv_comp<-princomp(School_SAT_Private)
+summary(SATPriv_comp, loadings=TRUE)
+
+SATPub_comp<-princomp(School_SAT_Public)
+summary(SATPub_comp, loadings=TRUE)
+
+
+ACT_comp<-princomp(School_ACT)
+summary(ACT_comp, loadings=TRUE)
+
+ACTPriv_comp<-princomp(School_ACT_Private)
+summary(ACTPriv_comp, loadings=TRUE)
+
+ACTPub_comp<-princomp(School_ACT_Public)
+summary(ACTPub_comp, loadings=TRUE)
+
+
+
+
