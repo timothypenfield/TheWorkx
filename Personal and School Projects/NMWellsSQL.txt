@@ -142,6 +142,7 @@ on a.TownRgSec=b.TownRgSec_AllWells
 where b.COMPL_STATUS contains'Active' and (days_prod_2018>0 or days_prod_2017>0);
 quit;
 
+
 PROC means data=NMWells.ActiveWellsNearLeaseProperty
 N NMISS;
 var _NUMERIC_;
