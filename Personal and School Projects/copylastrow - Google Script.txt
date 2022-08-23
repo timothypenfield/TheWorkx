@@ -1,0 +1,91 @@
+function OT(){
+onEditOT();
+OTFormulaToCell()
+copyLastRowOT();
+OTcombinedformula();
+}
+
+function onEditOT() {
+  var ss = SpreadsheetApp.openById('18AexG_KryFJwcDu_ZTQpGHYYsbipRv7RuA7Lwy0snAE');
+    var sName = ss.getSheetByName('Formula');
+  var target = 'Formula' 
+  Logger.log('Starting script...');
+  
+if ('Formula' == target){
+  Logger.log('The sheet name: "' + target +'" was edited.');
+  
+  var destSheet = ss.getSheetByName(target);
+  var lastRow = destSheet.getLastRow();
+  
+  var source = ss.getRange(target+"!A2:AI2");
+  var destination = destSheet.getRange("A"+lastRow);
+  destination.activate();
+  source.copyTo(destination, SpreadsheetApp.CopyPasteType.PASTE_FORMULA)
+  Logger.log('  Update 1 - "A:' + lastRow + ':AI' + lastRow + '" was edited.');
+  } else
+  Logger.log('Nothing done because sheet name is: "' + sName + '"');
+}
+
+function OTFormulaToCell(){
+
+    // add the id of your spreadsheet here
+    var sss = SpreadsheetApp.openById('18AexG_KryFJwcDu_ZTQpGHYYsbipRv7RuA7Lwy0snAE');
+
+    // add the name of the sheet here
+    var ss = sss.getSheetByName('Formula');
+
+    // column you want to evaluate for the formula
+    var columnToEvaluateAgainst = "AZ";
+
+    // column you want to add the formula to
+    var columnToAddFormulaTo = "AZ";
+
+    // identifies the last row
+    var lastRow = ss.getLastRow();
+
+    // is the cell to evaluate in the last row
+    var evaluateThisCell = columnToEvaluateAgainst + lastRow;
+
+    // is the cell that gets the forumla in the last row
+    var addFormulaToThisCell = columnToAddFormulaTo + lastRow;
+
+    // this is my formula
+    var projectFormula = "One Time";
+
+    // grabs the cell that gets the forumla in the last row
+    var ssCellToGetFormula = ss.getRange(addFormulaToThisCell);
+
+    // sets the formula to the cell in the last row
+    ssCellToGetFormula.setValue(projectFormula);
+
+};
+
+function copyLastRowOT() {  
+var target = SpreadsheetApp.openById('1kIi4Iixl2UgQM91gnv-vl9Smoi828C5TRkBxTBAmHmI').getSheetByName('Combined Data');
+var sheet = SpreadsheetApp.openById('18AexG_KryFJwcDu_ZTQpGHYYsbipRv7RuA7Lwy0snAE').getSheetByName('Formula');
+var lastrow = sheet.getLastRow();
+var sourceData = sheet.getRange(lastrow, 1, 1, 53).getValues();
+target.appendRow(sourceData[0]);
+}
+
+function OTcombinedformula() {
+  var ss = SpreadsheetApp.openById('1kIi4Iixl2UgQM91gnv-vl9Smoi828C5TRkBxTBAmHmI');
+    var sName = ss.getSheetName();
+  var target = 'Combined Data' 
+  Logger.log('Starting script...');
+  
+if (sName == target){
+  Logger.log('The sheet name: "' + target +'" was edited.');
+  
+  var destSheet = ss.getSheetByName(target);
+  var lastRow = destSheet.getLastRow();
+  
+  var source1 = ss.getRange(target+"!F2:O2");
+  var destination1 = destSheet.getRange("F"+lastRow);
+  destination1.activate();
+  source1.copyTo(destination1, SpreadsheetApp.CopyPasteType.PASTE_FORMULA)
+  Logger.log('  Update 1 - "F:' + lastRow + ':O' + lastRow + '" was edited.');
+  } else
+
+  Logger.log('Nothing done because sheet name is: "' + sName + '"');
+}

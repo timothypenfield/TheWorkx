@@ -1,0 +1,50 @@
+function duplicateSheetWithProtections() {
+  var ui = SpreadsheetApp.getUi();
+  var oldSheetName = ('Template');
+  var newSheetName = ui.prompt('New Estimate Name?');
+  var ss = SpreadsheetApp.getActiveSpreadsheet(); 
+  sheet = ss.getSheetByName(oldSheetName);
+  sheet2 = sheet.copyTo(ss).setName(newSheetName.getResponseText()); 
+  var activ = SpreadsheetApp.getActive().getSheetByName(newSheetName);
+  sheet2.activate();
+
+  var protections = sheet.getProtections(SpreadsheetApp.ProtectionType.RANGE);
+  for (var i = 0; i < protections.length; i++) {
+    var p = protections[i];
+    var rangeNotation = p.getRange().getA1Notation();
+    var p2 = sheet2.getRange(rangeNotation).protect();
+    p2.setDescription(p.getDescription());
+    p2.setWarningOnly(p.isWarningOnly());
+    if (!p.isWarningOnly()) {
+      p2.removeEditors(p2.getEditors());
+      p2.addEditors(p.getEditors());
+      // p2.setDomainEdit(p.canDomainEdit()); //  only if using an Apps domain 
+
+   }
+  }}
+
+
+function duplicateSheetWithProtectionsLong() {
+  var ui = SpreadsheetApp.getUi();
+  var oldSheetName = ('Template_Long');
+  var newSheetName = ui.prompt('New Estimate Name?');
+  var ss = SpreadsheetApp.getActiveSpreadsheet(); 
+  sheet = ss.getSheetByName(oldSheetName);
+  sheet2 = sheet.copyTo(ss).setName(newSheetName.getResponseText()); 
+  var activ = SpreadsheetApp.getActive().getSheetByName(newSheetName);
+  sheet2.activate();
+
+  var protections = sheet.getProtections(SpreadsheetApp.ProtectionType.RANGE);
+  for (var i = 0; i < protections.length; i++) {
+    var p = protections[i];
+    var rangeNotation = p.getRange().getA1Notation();
+    var p2 = sheet2.getRange(rangeNotation).protect();
+    p2.setDescription(p.getDescription());
+    p2.setWarningOnly(p.isWarningOnly());
+    if (!p.isWarningOnly()) {
+      p2.removeEditors(p2.getEditors());
+      p2.addEditors(p.getEditors());
+      // p2.setDomainEdit(p.canDomainEdit()); //  only if using an Apps domain 
+
+   }
+  }}

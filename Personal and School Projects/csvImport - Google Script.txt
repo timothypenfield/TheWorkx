@@ -1,0 +1,24 @@
+function importCSVFromGmail() {
+  var threads = GmailApp.search("label:qblessondata");
+  var message = threads[0].getMessages().pop();
+
+  var attachment = message.getAttachments()[0];
+
+  if (attachment != null) {
+    var attachName = attachment.getName();
+
+    // Is the attachment a CSV file
+    if (attachName.substring(attachName.length-4) === ".csv") {
+      var id = "1kIi4Iixl2UgQM91gnv-vl9Smoi828C5TRkBxTBAmHmI";
+      var name = "Combined Data";
+      var sheet = SpreadsheetApp.openById(id);
+      var tab = sheet.getSheetByName(name);
+
+      // Append to the content of the sheet    
+      var csvData = Utilities.parseCsv(attachment.getDataAsString(), ",");
+      csvData.shift();
+      var lastRow = sheet.getLastRow();
+      tab.getRange(lastRow+1, 1, csvData.length, csvData[0].length).setValues(csvData);  
+    }
+  } 
+}
