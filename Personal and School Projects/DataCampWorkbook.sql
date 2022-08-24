@@ -67,3 +67,59 @@ FROM countries AS c
     ON c.code = e.code
 -- Focus on 2010
 WHERE e.year = 2010;
+
+-- Select fields
+SELECT c.region, avg(e.gdp_percapita) AS avg_gdp
+-- From countries (alias as c)
+FROM countries AS c
+  -- Left join with economies (alias as e)
+  LEFT JOIN economies AS e
+    -- Match on code fields
+    ON c.code = e.code
+-- Focus on 2010
+WHERE year = 2010
+-- Group by region
+GROUP BY region;
+
+-- Select fields
+SELECT c.region, AVG(e.gdp_percapita) AS avg_gdp
+-- From countries (alias as c)
+from countries as c
+  -- Left join with economies (alias as e)
+  left join economies as e
+    -- Match on code fields
+    on c.code=e.code
+-- Focus on 2010
+where year = 2010
+-- Group by region
+Group by region
+-- Order by descending avg_gdp
+order by avg_gdp desc;
+
+SELECT name AS country, code, region, basic_unit
+-- From countries
+FROM countries
+  -- Join to currencies
+  left join currencies
+    -- Match on code
+    using (code)
+-- Where region is North America or null
+WHERE region = 'North America' OR region IS NULL
+-- Order by region
+ORDER BY region;
+
+-- Select fields (with aliases)
+SELECT c1.name AS country, region, l.name AS language,
+       basic_unit, frac_unit
+-- From countries (alias as c1)
+FROM countries AS c1
+  -- Join with languages (alias as l)
+  FULL JOIN languages AS l
+    -- Match on code
+    USING (code)
+  -- Join with currencies (alias as c2)
+  FULL JOIN currencies AS c2
+    -- Match on code
+    USING (code)
+-- Where region like Melanesia and Micronesia
+WHERE region LIKE 'M%esia';
