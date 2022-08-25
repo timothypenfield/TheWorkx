@@ -123,3 +123,227 @@ FROM countries AS c1
     USING (code)
 -- Where region like Melanesia and Micronesia
 WHERE region LIKE 'M%esia';
+
+-- Select fields from 2010 table
+Select *  
+-- From 2010 table
+  from economies2010
+	-- Set theory clause
+	Union 
+-- Select fields from 2015 table
+Select *
+  -- From 2015 table
+  from economies2015
+-- Order by code and year
+order by code, year asc;
+
+-- Select field
+Select country_code
+  -- From cities
+  from cities
+	-- Set theory clause
+	union
+-- Select field
+Select field
+  -- From currencies
+  from currencies
+-- Order by country_code
+order by country_code;
+
+-- Select fields
+SELECT code, year
+  -- From economies
+  FROM economies
+	-- Set theory clause
+	union all
+-- Select fields
+SELECT code, year
+  -- From populations
+  FROM populations
+-- Order by code, year
+ORDER BY code, year;
+
+-- Select fields
+SELECT code, year
+  -- From economies
+  FROM economies
+	-- Set theory clause
+	INTERSECT
+-- Select fields
+SELECT country_code, year
+  -- From populations
+  FROM populations
+-- Order by code and year
+ORDER BY code, year;
+
+-- Select fields
+SELECT name
+  -- From countries
+  FROM countries
+	-- Set theory clause
+	INTERSECT
+-- Select fields
+SELECT name
+  -- From cities
+  FROM cities;
+
+
+  -- Select field
+Select capital
+  -- From countries
+from countries
+	-- Set theory clause
+except
+-- Select field
+Select name
+  -- From cities
+ from cities
+-- Order by ascending capital
+order by capital asc;
+
+SELECT DISTINCT name
+  -- From languages
+  FROM languages
+-- Order by name
+ORDER BY name;
+
+-- Query from step 2
+SELECT DISTINCT name
+  FROM languages
+-- Where in statement
+Where code IN 
+(SELECT code
+   FROM countries
+   WHERE region = 'Middle East')
+Order by name
+
+-- Select fields
+select code,name
+  -- From Countries
+  from countries
+  -- Where continent is Oceania
+  where continent = 'Oceania' AND 
+  	-- And code not in
+  	Code not in
+  	-- Subquery
+  	(select code from currencies 
+  	 ___);
+
+
+     -- Select the city name
+Select name
+  -- Alias the table where city name resides
+  from cities AS c1
+  -- Choose only records matching the result of multiple set theory clauses
+  WHERE country_code IN
+(
+    -- Select appropriate field from economies AS e
+    SELECT e.code
+    FROM economies AS e
+    -- Get all additional (unique) values of the field from currencies AS c2  
+    Union
+    SELECT c2.code
+    FROM currencies AS c2
+    -- Exclude those appearing in populations AS p
+    except
+    SELECT p.country_code
+    FROM populations AS p
+);-- Select fields
+Select *
+  -- From populations
+from populations
+-- Where life_expectancy is greater than
+where life_expectancy> 1.15 *
+  -- 1.15 * subquery
+  (Select avg(life_expectancy)
+   from populations WHERE year =2015)
+  and year =2015;
+
+  -- Select fields
+Select name, country_code, urbanarea_pop
+  -- From cities
+  from cities ___
+-- Where city name in the field of capital cities
+where name IN
+  -- Subquery
+  (select capital
+   from countries)
+ORDER BY urbanarea_pop DESC;
+
+SELECT countries.name AS country,
+  (SELECT count(*)
+   FROM cities
+   WHERE countries.code = cities.country_code) AS cities_num
+FROM countries
+ORDER BY cities_num DESC, country
+LIMIT 9;
+
+-- Select fields
+select countries.local_name,subquery.lang_num
+  -- From countries
+  from countries,
+  	-- Subquery (alias as subquery)
+  	(SELECT code, COUNT(*) AS lang_num
+  	 FROM languages
+  	 GROUP BY code) AS subquery
+  -- Where codes match
+where subquery.code=countries.code
+-- Order by descending number of languages
+Order by lang_num desc;
+
+SELECT MAX(inflation_rate) AS max_inf
+  -- Subquery using FROM (alias as subquery)
+  FROM (
+      SELECT name, continent, inflation_rate
+      FROM countries
+      INNER JOIN economies
+      USING (code)
+      WHERE year = 2015) AS subquery
+-- Group by continent
+GROUP BY continent;
+
+SELECT code, inflation_rate, unemployment_rate
+  -- From economies
+  FROM economies
+  -- Where year is 2015 and code is not in
+  WHERE year = 2015 AND code NOT IN
+  	-- Subquery
+  	(SELECT code
+  	 FROM countries
+  	 WHERE (gov_form = 'Constitutional Monarchy' OR gov_form LIKE '%Republic%'))
+-- Order by inflation rate
+ORDER BY inflation_rate;
+
+-- Select fields
+SELECT c.region, c.continent, avg(p.fertility_rate) AS avg_fert_rate
+  -- From left table
+  FROM countries AS c
+    -- Join to right table
+    INNER JOIN populations AS p
+      -- Match on join condition
+      ON c.code = p.country_code
+  -- Where specific records matching some condition
+  WHERE year = 2015
+-- Group appropriately
+GROUP BY region, continent
+-- Order appropriately
+ORDER BY avg_fert_rate asc;
+
+-- Select fields
+SELECT name, country_code, city_proper_pop, metroarea_pop,  
+      -- Calculate city_perc
+      city_proper_pop / metroarea_pop * 100 AS city_perc
+  -- From appropriate table
+  FROM cities
+  -- Where 
+  WHERE name IN
+    -- Subquery
+    (SELECT capital
+     FROM countries
+     WHERE (continent = 'Europe'
+        OR continent LIKE '%America%'))
+       AND metroarea_pop IS not null
+-- Order appropriately
+ORDER BY city_perc desc
+-- Limit amount
+limit 10;
