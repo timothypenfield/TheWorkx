@@ -63,3 +63,18 @@ FROM user_transactions u)
 
 SELECT COUNT(user_id) AS users FROM cte
 WHERE first_count>0
+
+Select count (distinct company_id) as duplicate_companies 
+from
+
+(SELECT 
+  company_id, 
+  title, 
+  description, 
+  COUNT(job_id) AS job_count
+FROM job_listings
+GROUP BY 
+  company_id, 
+  title, 
+  description) as alias
+where job_count>1
