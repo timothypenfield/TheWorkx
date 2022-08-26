@@ -347,3 +347,72 @@ SELECT name, country_code, city_proper_pop, metroarea_pop,
 ORDER BY city_perc desc
 -- Limit amount
 limit 10;
+
+
+SELECT
+	-- Select the team long name and team API id
+team_long_name,team_api_id
+FROM teams_germany
+-- Only include FC Schalke 04 and FC Bayern Munich
+WHERE team_long_name IN ('FC Schalke 04', 'FC Bayern Munich');
+
+
+SELECT 
+    CASE WHEN hometeam_id = 10189 THEN 'FC Schalke 04'
+         WHEN hometeam_id = 9823 THEN 'FC Bayern Munich'
+         ELSE 'Other' END AS home_team,
+	COUNT(id) AS total_matches
+FROM matches_germany
+-- Group by the CASE statement alias
+GROUP BY home_team;
+
+SELECT 
+	-- Select the date of the match
+	date,
+	-- Identify home wins, losses, or ties
+	case when home_goal > away_goal then 'Home win!'
+        when home_goal < away_goal then 'Home loss :(' 
+        else 'Tie' End as outcome
+FROM matches_spain;
+
+SELECT 
+	m.date,
+	--Select the team long name column and call it 'opponent'
+	t.team_long_name AS opponent, 
+	-- Complete the CASE statement with an alias
+	Case when m.home_goal > m.away_goal then 'Home win!'
+        when m.home_goal < m.away_goal then 'Home loss :('
+        else 'Tie' End as outcome
+FROM matches_spain AS m
+-- Left join teams_spain onto matches_spain
+left join teams_spain AS t
+on m.awayteam_id = t.team_api_id;
+
+
+SELECT 
+	m.date,
+	t.team_long_name AS opponent,
+    -- Complete the CASE statement with an alias
+	Case when m.home_goal > m.away_goal then 'Barcelona win!'
+        when m.home_goal < m.away_goal then 'Barcelona loss :(' 
+        else 'Tie' End as outcome 
+FROM matches_spain AS m
+LEFT JOIN teams_spain AS t 
+ON m.awayteam_id = t.team_api_id
+-- Filter for Barcelona as the home team
+WHERE m.hometeam_id = 8634; 
+
+
+Select user_id, count(product_id) as product_num
+from user_transactions
+where user_id in
+(select user_id, sum(spend) as total_spend
+from user_transactions
+group by user_id
+having sum(spend)>1000)
+
+group by user_id
+Order by product_num desc
+
+
+
