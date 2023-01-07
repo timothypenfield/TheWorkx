@@ -924,6 +924,9 @@ SELECT DISTINCT
    m.date,
     home.team_long_name AS home_team,
     away.team_long_name AS away_team,
+
+
+
     m.home_goal, m.away_goal,
     rank() over(order by ABS(home_goal - away_goal) desc) as match_rank
 -- Join the CTEs onto the match table
@@ -949,3 +952,54 @@ ON l.country_id = m.country_id
 -- Only include 2013/2014 results
 WHERE season = '2013/2014'
 GROUP BY l.name;
+
+
+
+-- Truncate rental_date by year
+SELECT DATE_TRUNC('year',rental_date) AS rental_year
+FROM rental;
+
+-- Truncate rental_date by month
+SELECT date_trunc('month', rental_date) AS rental_month
+FROM rental;
+
+-- Truncate rental_date by month
+SELECT date_trunc('month', rental_date) AS rental_month
+FROM rental;
+
+SELECT 
+  -- Extract the day of week date part from the rental_date
+  EXTRACT(dow FROM rental_date) AS dayofweek,
+  AGE(return_date, rental_date) AS rental_days
+FROM rental AS r 
+WHERE 
+  -- Use an INTERVAL for the upper bound of the rental_date 
+  rental_date BETWEEN CAST('2005-05-01' AS DATE)
+   AND CAST('2005-05-01' AS DATE) + INTERVAL '90 day';
+
+   SELECT 
+  c.first_name || ' ' || c.last_name AS customer_name,
+  f.title,
+  r.rental_date,
+  -- Extract the day of week date part from the rental_date
+  EXTRACT(dow FROM r.rental_date) AS dayofweek,
+  AGE(r.return_date, r.rental_date) AS rental_days,
+  -- Use DATE_TRUNC to get days from the AGE function
+  CASE WHEN date_trunc('day', age(r.return_date, r.rental_date)) > 
+  -- Calculate number of d
+    f.rental_duration * interval '1' day 
+  THEN TRUE 
+  ELSE FALSE END AS past_due 
+FROM 
+  film AS f 
+  INNER JOIN inventory AS i 
+  	ON f.film_id = i.film_id 
+  INNER JOIN rental AS r 
+  	ON i.inventory_id = r.inventory_id 
+  INNER JOIN customer AS c 
+  	ON c.customer_id = r.customer_id 
+WHERE 
+  -- Use an INTERVAL for the upper bound of the rental_date 
+  r.rental_date BETWEEN CAST('2005-05-01' AS DATE) 
+  AND CAST('2005-05-01' AS DATE) + INTERVAL '90 day';
+
