@@ -1003,3 +1003,44 @@ WHERE
   r.rental_date BETWEEN CAST('2005-05-01' AS DATE) 
   AND CAST('2005-05-01' AS DATE) + INTERVAL '90 day';
 
+-- Concatenate the first_name and last_name and email
+SELECT CONCAT(first_name,' ', last_name,' ', '<', email, '>') AS full_email 
+FROM customer
+
+SELECT 
+  -- Concatenate the category name to coverted to uppercase
+  -- to the film title converted to title case
+  UPPER(c.name) || ': ' || INITCAP(f.title) AS film_category,
+  -- Convert the description column to lowercase
+  LOWER(f.description) AS description
+FROM 
+  film AS f 
+  INNER JOIN film_category AS fc 
+  	ON f.film_id = fc.film_id 
+  INNER JOIN category AS c 
+  	ON fc.category_id = c.category_id;
+
+  SELECT 
+  -- Replace whitespace in the film title with an underscore
+  replace(title,' ', '_') AS title
+FROM film; 
+
+SELECT 
+  -- Select the title and description columns
+  title,
+  description,
+  -- Determine the length of the description column
+  length(description) AS desc_len
+FROM film;
+
+SELECT 
+  -- Select the first 50 characters of description
+  left(description, 50) AS short_desc
+FROM 
+  film AS f; 
+
+  SELECT 
+  -- Select only the street name from the address table
+  SUBSTRING(address FROM POSITION(' ' IN address)+1 FOR LENGTH(address))
+FROM 
+  address;
