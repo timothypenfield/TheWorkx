@@ -143,3 +143,119 @@ SELECT lower, upper, count(question_count)
  GROUP BY lower, upper
  -- Order by lower to put bins in order
  ORDER BY lower;
+
+
+ -- Correlation between revenues and profit
+SELECT corr(revenues,profits) AS rev_profits,
+	   -- Correlation between revenues and assets
+       corr(revenues,assets) AS rev_assets,
+       -- Correlation between revenues and equity
+       corr(revenues,equity) AS rev_equity 
+  FROM fortune500;
+
+  -- What groups are you computing statistics by?
+SELECT sector,
+       -- Select the mean of assets with the avg function
+       avg(assets) AS mean,
+       -- Select the median
+       percentile_disc(.5) within group (order by assets) AS median
+  FROM fortune500
+ -- Computing statistics for each what?
+ GROUP BY sector
+ -- Order results by a value of interest
+ ORDER BY mean;
+
+ -- To clear table if it already exists;
+-- fill in name of temp table
+DROP TABLE IF EXISTS profit80;
+
+-- Create the temporary table
+create temp table profit80 AS 
+  -- Select the two columns you need; alias as needed
+  SELECT sector, 
+  percentile_disc(.8) within group (order by profits) AS pct80
+    -- What table are you getting the data from?
+from fortune500   
+-- What do you need to group by?
+   group by sector ;
+   
+-- See what you created: select all columns and rows 
+-- from the table you created
+SELECT * 
+  FROM profit80;
+
+  -- Code from previous step
+DROP TABLE IF EXISTS profit80;
+
+CREATE TEMP TABLE profit80 AS
+  SELECT sector, 
+         percentile_disc(0.8) WITHIN GROUP (ORDER BY profits) AS pct80
+    FROM fortune500 
+   GROUP BY sector;
+
+-- Select columns, aliasing as needed
+SELECT f.title, f.sector,f.profits, 
+       f.profits/p.pct80 AS ratio
+-- What tables do you need to join?  
+  FROM fortune500 f
+       LEFT JOIN profit80 p
+-- How are the tables joined?
+       ON f.sector=p.sector
+-- What rows do you want to select?
+ WHERE f.profits> p.pct80;
+
+ -- To clear table if it already exists
+DROP TABLE IF EXISTS startdates;
+
+CREATE TEMP TABLE startdates AS
+SELECT tag, min(date) AS mindate
+  FROM stackoverflow
+ GROUP BY tag;
+ 
+-- Select tag (Remember the table name!) and mindate
+SELECT startdates.tag, 
+       mindate, 
+       -- Select question count on the min and max days
+	   so_min.question_count AS min_date_question_count,
+       so_max.question_count AS max_date_question_count,
+       -- Compute the change in question_count (max- min)
+       so_max.question_count - so_min.question_count AS change
+  FROM startdates
+       -- Join startdates to stackoverflow with alias so_min
+       INNER JOIN stackoverflow AS so_min
+          -- What needs to match between tables?
+          ON startdates.tag = so_min.tag
+         AND startdates.mindate = so_min.date
+       -- Join to stackoverflow again with alias so_max
+       INNER JOIN stackoverflow AS so_max
+          -- Again, what needs to match between tables?
+          ON startdates.tag = so_max.tag
+         AND so_max.date = '2018-09-25';
+
+         DROP TABLE IF EXISTS correlations;
+
+CREATE TEMP TABLE correlations AS
+SELECT 'profits'::varchar AS measure,
+       corr(profits, profits) AS profits,
+       corr(profits, profits_change) AS profits_change,
+       corr(profits, revenues_change) AS revenues_change
+  FROM fortune500;
+
+-- Add a row for profits_change
+-- Insert into what table?
+INSERT INTO correlations
+-- Follow the pattern of the select statement above
+-- Using profits_change instead of profits
+SELECT 'profits_change'::varchar AS measure,
+       corr(profits_change, profits) AS profits,
+       corr(profits_change, profits_change) AS profits_change,
+       corr(profits_change, revenues_change) AS revenues_change
+  FROM fortune500;
+
+-- Repeat the above, but for revenues_change
+INSERT INTO correlations
+SELECT 'revenues_change'::varchar AS measure,
+       corr(revenues_change, profits) AS profits,
+       corr(revenues_change, profits_change) AS profits_change,
+       corr(revenues_change, revenues_change) AS revenues_change
+  FROM fortune500;
