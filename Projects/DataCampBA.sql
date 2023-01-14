@@ -259,3 +259,26 @@ SELECT 'revenues_change'::varchar AS measure,
        corr(revenues_change, profits_change) AS profits_change,
        corr(revenues_change, revenues_change) AS revenues_change
   FROM fortune500;
+
+  -- Select the count of each level of priority
+SELECT priority, count(*)
+from evanston311
+group by priority
+order by priority;
+
+SELECT zip, count(*)
+  FROM evanston311
+ GROUP BY zip
+HAVING count(*)>=100; 
+
+SELECT street,count(*)
+  FROM evanston311
+ group by street
+ order by count(*) desc
+ limit 5;
+
+ SELECT distinct street,
+       -- Trim off unwanted characters from street
+       trim(street, '0123456789 #/.') AS cleaned_street
+  FROM evanston311
+ ORDER BY street;
